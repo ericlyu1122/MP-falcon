@@ -4,6 +4,7 @@ import ca.ubc.ece.cpen221.mp1.utils.HasSimilarity;
 import javazoom.jl.player.StdPlayer;
 
 import java.util.ArrayList;
+import java.util.*;
 
 public class SoundWave implements HasSimilarity<SoundWave> {
 
@@ -15,7 +16,10 @@ public class SoundWave implements HasSimilarity<SoundWave> {
 
     // some representation fields that you could use
     private ArrayList<Double> lchannel = new ArrayList<>();
-    private ArrayList<Double> rchannel = new ArrayList<>();
+    private ArrayList<Double> rchannel= new ArrayList<>();
+
+
+
     private int samples = 0;
 
     /**
@@ -28,11 +32,18 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public SoundWave(double[] lchannel, double[] rchannel) {
         // TODO: Implement this constructor
+        for(int i=0;i<lchannel.length&&i<rchannel.length;i++) {
+            this.lchannel.add(lchannel[i]) ;
+            this.rchannel.add(rchannel[i]) ;
+
+        }
+
     }
 
     public SoundWave() {
         // TODO: You should implement a default constructor
         // that creates an empty wave
+        this.samples=0;
     }
 
     /**
@@ -46,6 +57,13 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public SoundWave(double freq, double phase, double amplitude, double duration) {
         // TODO: Implement this constructor
+        this.samples= (int) (duration*SAMPLES_PER_SECOND);
+        for(int i=1;i<=samples;i++){
+            double sin = Math.sin(2 * Math.PI * freq * i / SAMPLES_PER_SECOND + phase);
+
+            this.lchannel.add(amplitude* sin);
+            this.rchannel.add(amplitude* sin);
+        }
     }
 
     /**
@@ -56,7 +74,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public double[] getLeftChannel() {
         // TODO: Implement this
-        return null; // change this
+        double[] leftChannel = new double[rchannel.size()];
+        for(int i=0;i<rchannel.size();i++){
+            leftChannel[i]=rchannel.get(i);
+        }
+
+        return leftChannel; // change this
     }
 
     /**
@@ -67,7 +90,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public double[] getRightChannel() {
         // TODO: Implement this
-        return null; // change this
+        double[] rightChannel = new double[rchannel.size()];
+        for(int i=0;i<rchannel.size();i++){
+            rightChannel[i]=rchannel.get(i);
+        }
+
+        return rightChannel; // change this
     }
 
 
@@ -101,6 +129,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public void append(double[] lchannel, double[] rchannel) {
         // TODO: Implement this method.
+       for(int i=0;(i<rchannel.length&&i<lchannel.length)||
+               (i<this.rchannel.size()&&i<this.lchannel.size());i++){
+           this.lchannel.add(lchannel[i]);
+           this.rchannel.add(rchannel[i]);
+       }
+
     }
 
     /**
@@ -110,15 +144,34 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public void append(SoundWave other) {
         // TODO: Implement this method.
+        this.lchannel.addAll(other.lchannel);
+        this.rchannel.addAll(other.rchannel);
     }
 
     /**
      * Create a new wave by adding another wave to this wave.
      * (You should also write clear specifications for this method.)
+     *
+     * @param other the other wave added to the original one
      */
     public SoundWave add(SoundWave other) {
         // TODO: Implement this method
-        return null; // change this
+        SoundWave Addwave =new SoundWave();
+        for(int i=0;i<other.lchannel.size()||
+                (i<this.lchannel.size());i++){
+            if(i>=other.lchannel.size()||i>=this.lchannel.size()){
+                if(other.lchannel.size()>this.lchannel.size()){
+                    this.lchannel.add(other.lchannel.get(i));
+                    this.rchannel.add(other.rchannel.get(i));
+                }
+            }else {
+                this.lchannel.set(i,this.lchannel.get(i)+other.lchannel.get(i));
+                this.rchannel.set(i,this.rchannel.get(i)+other.rchannel.get(i));
+            }
+        }
+        Addwave.lchannel.addAll(this.lchannel);
+        Addwave.rchannel.addAll(this.rchannel);
+        return Addwave; // change this
     }
 
     /**
@@ -130,7 +183,16 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public SoundWave addEcho(int delta, double alpha) {
         // TODO: Implement this method
-        return null; // change this
+        SoundWave echoWave=new SoundWave();
+
+        for(int i=0;i<this.samples;i++){
+            int temp=(int)((double)(i/SAMPLES_PER_SECOND-delta)*SAMPLES_PER_SECOND);
+            this.lchannel.set(i,this.lchannel.get(i)+this.lchannel.get(temp)*alpha);
+            this.rchannel.set(i,this.rchannel.get(i)+this.rchannel.get(temp)*alpha);
+        }
+        echoWave.lchannel.addAll(this.lchannel);
+        echoWave.rchannel.addAll(this.rchannel);
+        return echoWave; // change this
     }
 
     /**
@@ -142,6 +204,16 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public void scale(double scalingFactor) {
         // TODO: Implement this method.
+        for(Double x:rchannel) {
+           x*=scalingFactor;
+            if(x>=1.0) x=1.0;
+            else if(x<-1.0) x=-1.0;
+        }
+        for(Double y:lchannel) {
+            y*=scalingFactor;
+            if(y>=1.0) y=1.0;
+            else if(y<-1.0) y=-1.0;
+        }
     }
 
     /**
@@ -154,7 +226,25 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public SoundWave highPassFilter(int dt, double RC) {
         // TODO: Implement this
-        return null; // change this
+        SoundWave highPass =new SoundWave();
+        double alpha=RC/(RC+dt);
+        double tempR=this.rchannel.get(0);
+        double tempL=this.lchannel.get(0);
+        double storeR;
+        double storeL;
+        for (int i=1;i<rchannel.size();i++){
+        // y[i] := α * y[i-1] + α * (x[i] - x[i-1])
+            storeR=this.rchannel.get(i);
+            this.rchannel.set(i,alpha*this.rchannel.get(i-1)+alpha*(storeR-tempR));
+            tempR=storeR;
+            storeL=this.lchannel.get(i);
+            this.lchannel.set(i,alpha*this.lchannel.get(i-1)+alpha*(storeL-tempL));
+            tempL=storeL;
+        }
+        highPass.rchannel.addAll(this.rchannel);
+        highPass.lchannel.addAll(this.lchannel);
+
+        return highPass; // change this
     }
 
     /**
@@ -181,7 +271,24 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public boolean contains(SoundWave other) {
         // TODO: Implement this method
-        return true; // change this
+        int len=0;
+        for(int i=0;i<this.lchannel.size()||i<this.rchannel.size();i++){
+
+            if((this.lchannel.get(i)==other.lchannel.get(0))||(this.rchannel.get(i)==other.rchannel.get(0))) {
+                for(int j=1;j<other.lchannel.size()||j<other.rchannel.size();j++){
+                    len++;
+                    if((this.lchannel.get(i+j) !=other.lchannel.get(j))||(this.rchannel.get(i+j)!=other.rchannel.get(j))){
+                        return false;
+                    }
+                }
+            }
+        }
+       if(len==other.lchannel.size()||len==other.rchannel.size()) {
+           return true;
+       }
+        else {
+            return false; // change this
+       }
     }
 
     /**
