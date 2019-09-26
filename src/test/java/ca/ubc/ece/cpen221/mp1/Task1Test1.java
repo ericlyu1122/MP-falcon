@@ -60,15 +60,15 @@ public class Task1Test1 {
 
     @Test
     public void testadd2() {
-        double[] al = {0.2, -0.13334552, 0.0, 0.9888732};
-        double[] ar = {0.2, -0.13334552, 0.0, 0.9888732};
+        double[] al = {0.2, -0.13334552, 0.6, 0.9888732};
+        double[] ar = {0.2, -0.13334552, 0.6, 0.9888732};
         SoundWave a = new SoundWave(al, ar);
         double[] bl = {-0.3, 0.3333333, 0.5, -0.1666666};
         double[] br = {-0.3, 0.3333333, 0.5, -0.1666666};
         SoundWave b = new SoundWave(bl, br);
         a.add(b);
-        double[] resultl = {-0.1, 0.19998778, 0.5, 0.8222066};
-        double[] resultr = {-0.1, 0.19998778, 0.5, 0.8222066};
+        double[] resultl = {-0.1, 0.19998778, 1.0, 0.8222066};
+        double[] resultr = {-0.1, 0.19998778, 1.0, 0.8222066};
         Assert.assertArrayEquals(resultl, a.getLeftChannel(), 0.00001);
         Assert.assertArrayEquals(resultr, a.getRightChannel(), 0.00001);
     }

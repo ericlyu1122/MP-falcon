@@ -184,8 +184,16 @@ public class SoundWave implements HasSimilarity<SoundWave> {
                     this.rchannel.add(other.rchannel.get(i));
                 }
             }else {
-                this.lchannel.set(i,this.lchannel.get(i)+other.lchannel.get(i));
-                this.rchannel.set(i,this.rchannel.get(i)+other.rchannel.get(i));
+                if(this.lchannel.get(i)+other.lchannel.get(i)<=1&&this.lchannel.get(i)+other.lchannel.get(i)>=-1) {
+                    this.lchannel.set(i, this.lchannel.get(i) + other.lchannel.get(i));
+                    this.rchannel.set(i, this.rchannel.get(i) + other.rchannel.get(i));
+                }else if(this.lchannel.get(i)+other.lchannel.get(i)>1){
+                    this.lchannel.set(i,1.0);
+                    this.rchannel.set(i,1.0);
+                }else {
+                    this.lchannel.set(i,-1.0);
+                    this.rchannel.set(i,-1.0);
+                }
             }
         }
         Addwave.lchannel.addAll(this.lchannel);
