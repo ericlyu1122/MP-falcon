@@ -1,9 +1,11 @@
 package ca.ubc.ece.cpen221.mp1;
 
+import ca.ubc.ece.cpen221.mp1.utils.ComplexNumber;
 import ca.ubc.ece.cpen221.mp1.utils.HasSimilarity;
 import javazoom.jl.player.StdPlayer;
 
 import java.util.ArrayList;
+
 import java.util.*;
 
 public class SoundWave implements HasSimilarity<SoundWave> {
@@ -32,11 +34,17 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public SoundWave(double[] lchannel, double[] rchannel) {
         // TODO: Implement this constructor
-        for(int i=0;i<lchannel.length&&i<rchannel.length;i++) {
+        for(int i=0;i<lchannel.length;i++) {
             this.lchannel.add(lchannel[i]) ;
-            this.rchannel.add(rchannel[i]) ;
+
 
         }
+        for(int j=0;j<rchannel.length;j++) {
+
+            this.rchannel.add(rchannel[j]) ;
+
+        }
+        this.samples=this.rchannel.size();
 
     }
 
@@ -58,7 +66,7 @@ public class SoundWave implements HasSimilarity<SoundWave> {
     public SoundWave(double freq, double phase, double amplitude, double duration) {
         // TODO: Implement this constructor
         this.samples= (int) (duration*SAMPLES_PER_SECOND);
-        for(int i=1;i<=samples;i++){
+        for(int i=0;i<=samples;i++){
             double sin = Math.sin(2 * Math.PI * freq * i / SAMPLES_PER_SECOND + phase);
 
             this.lchannel.add(amplitude* sin);
@@ -74,9 +82,9 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public double[] getLeftChannel() {
         // TODO: Implement this
-        double[] leftChannel = new double[rchannel.size()];
-        for(int i=0;i<rchannel.size();i++){
-            leftChannel[i]=rchannel.get(i);
+        double[] leftChannel = new double[lchannel.size()];
+        for(int i=0;i<lchannel.size();i++){
+            leftChannel[i]=lchannel.get(i);
         }
 
         return leftChannel; // change this
@@ -109,6 +117,16 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      *
      * @param args are currently ignored but you could be creative.
      */
+    /**
+     * A simple main method to play an MP3 file. Note that MP3 files should
+     * be encoded to use stereo channels and not mono channels for the sound to
+     * play out correctly.
+     * <p>
+     * One should try to get this method to work correctly at the start.
+     * </p>
+     *
+     * @param args are currently ignored but you could be creative.
+     */
     public static void main(String[] args) {
         StdPlayer.open("mp3/anger.mp3");
         SoundWave sw = new SoundWave();
@@ -129,12 +147,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public void append(double[] lchannel, double[] rchannel) {
         // TODO: Implement this method.
-       for(int i=0;(i<rchannel.length&&i<lchannel.length)||
-               (i<this.rchannel.size()&&i<this.lchannel.size());i++){
-           this.lchannel.add(lchannel[i]);
-           this.rchannel.add(rchannel[i]);
-       }
-
+      for(double value : lchannel){
+          this.lchannel.add(value);
+      }
+      for(double v: rchannel){
+          this.rchannel.add(v);
+      }
     }
 
     /**
@@ -157,6 +175,7 @@ public class SoundWave implements HasSimilarity<SoundWave> {
     public SoundWave add(SoundWave other) {
         // TODO: Implement this method
         SoundWave Addwave =new SoundWave();
+
         for(int i=0;i<other.lchannel.size()||
                 (i<this.lchannel.size());i++){
             if(i>=other.lchannel.size()||i>=this.lchannel.size()){
@@ -181,18 +200,42 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param alpha > 0. alpha is the damping factor applied to the echo wave.
      * @return a new sound wave with an echo.
      */
-    public SoundWave addEcho(int delta, double alpha) {
+    public SoundWave addEcho(int delta, double alpha) throws IllegalArgumentException {
         // TODO: Implement this method
-        SoundWave echoWave=new SoundWave();
+if(delta<0||alpha<0){
+    throw new IllegalArgumentException();
+}else {
+    int temp ;
 
-        for(int i=0;i<this.samples;i++){
-            int temp=(int)((double)(i/SAMPLES_PER_SECOND-delta)*SAMPLES_PER_SECOND);
-            this.lchannel.set(i,this.lchannel.get(i)+this.lchannel.get(temp)*alpha);
-            this.rchannel.set(i,this.rchannel.get(i)+this.rchannel.get(temp)*alpha);
+    double[] rchan = new double[this.samples + delta];
+    double[] lchan = new double[this.samples + delta];
+    for (int i = 0; i < (this.samples + delta); i++) {
+        temp = i - delta;
+        if (i < delta && i < this.samples) {
+            rchan[i] = this.rchannel.get(i);
+            lchan[i] = this.lchannel.get(i);
+        } else if (i >= delta && i < this.samples && temp >= 0) {
+            if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha <= 1.0 && this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= -1.0) {
+                rchan[i] = this.rchannel.get(i) + this.rchannel.get(temp) * alpha;
+                lchan[i] = this.lchannel.get(i) + this.lchannel.get(temp) * alpha;
+            } else if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= 1.0) {
+                rchan[i] = 1.0;
+                lchan[i] = 1.0;
+            } else {
+                rchan[i] = -1.0;
+                lchan[i] = -1.0;
+            }
+        } else if (i >= delta && i < this.samples + delta && temp < 0) {
+            rchan[i] = 0.0;
+            lchan[i] = 0.0;
+        } else if (i >= delta && i < this.samples + delta && temp >= 0) {
+            rchan[i] = this.rchannel.get(temp) * alpha;
+            lchan[i] = this.lchannel.get(temp) * alpha;
         }
-        echoWave.lchannel.addAll(this.lchannel);
-        echoWave.rchannel.addAll(this.rchannel);
-        return echoWave; // change this
+    }
+    SoundWave echoWave = new SoundWave(rchan, lchan);
+    return echoWave;
+}// change this
     }
 
     /**
@@ -258,7 +301,26 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      */
     public double highAmplitudeFreqComponent() {
         // TODO: Implement this method
-        return -1; // change this
+        double xt;
+        double tempAmp=0.0;
+        double maxAmp=0.0;
+        int Kval=0;
+        int i;
+        ComplexNumber Sum=new ComplexNumber(0.0,0.0);
+        for( i=0;i<this.samples;i++){
+
+            for (int j=0;j<this.samples;j++){
+                xt=this.rchannel.get(j);
+                ComplexNumber c= new ComplexNumber(xt*(Math.cos(2*Math.PI*i*j/SAMPLES_PER_SECOND/this.samples)),-xt*(Math.sin(2*Math.PI*i*j/SAMPLES_PER_SECOND/this.samples)));
+                Sum=Sum.add(c);
+            }
+            tempAmp=Sum.magnitude();
+            if(tempAmp>=maxAmp){
+                maxAmp=tempAmp;
+                Kval=i;
+            }
+        }
+        return (float)Kval*SAMPLES_PER_SECOND/samples; // change this
     }
 
     /**
