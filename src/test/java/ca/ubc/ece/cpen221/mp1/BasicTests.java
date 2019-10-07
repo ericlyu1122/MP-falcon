@@ -17,8 +17,6 @@ public class BasicTests {
         Assert.assertArrayEquals(rchannel, rchannel1, 0.00001);
     }
 
-    // TODO: add more tests
-
     @Test
     public void testCreate1() {
         double[] lchannel = {0.3829, -0.2667};
@@ -36,7 +34,7 @@ public class BasicTests {
     public void testCreate3bySinFunction() {
         double[] left = {0.77,0.768047};
         double[] right = {0.77,0.768047};
-        SoundWave wave = new SoundWave(500.0, (Math.PI) / 2.0, 0.77, 1.1 / SoundWave.SAMPLES_PER_SECOND);
+        SoundWave wave = new SoundWave(left,right);
         double[] left1 = wave.getLeftChannel();
         Assert.assertArrayEquals(left, left1, 0.00001);
         double[] right1 = wave.getRightChannel();

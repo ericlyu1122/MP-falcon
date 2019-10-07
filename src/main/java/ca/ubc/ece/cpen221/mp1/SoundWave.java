@@ -10,7 +10,7 @@ import java.util.*;
 import java.lang.*;
 
 
-public class SoundWave implements HasSimilarity<SoundWave> {
+public class SoundWave implements HasSimilarity<SoundWave>  ,Comparable<SoundWave> {
 
     // We are going to treat the number of samples per second of a sound wave
     // as a constant.
@@ -20,11 +20,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
 
     // some representation fields that you could use
     private ArrayList<Double> lchannel = new ArrayList<>();
-    private ArrayList<Double> rchannel= new ArrayList<>();
-    private double []  beta= new double[1];
+    private ArrayList<Double> rchannel = new ArrayList<>();
+    private double[] beta = new double[1];
 
 
     private int samples = 0;
+    private int samplesL = 0;
 
     /**
      * Create a new SoundWave using the provided left and right channel
@@ -35,25 +36,19 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param rchannel is not null and represents the right channel.
      */
     public SoundWave(double[] lchannel, double[] rchannel) {
-        // TODO: Implement this constructor
-        for(int i=0;i<lchannel.length;i++) {
-            this.lchannel.add(lchannel[i]) ;
 
-
+        for (double v : lchannel) {
+            this.lchannel.add(v);
         }
-        for(int j=0;j<rchannel.length;j++) {
-
-            this.rchannel.add(rchannel[j]) ;
-
+        for (double v : rchannel) {
+            this.rchannel.add(v);
         }
-        this.samples=this.rchannel.size();
-
+        this.samples = this.rchannel.size();
+        this.samplesL = this.lchannel.size();
     }
 
     public SoundWave() {
-        // TODO: You should implement a default constructor
-        // that creates an empty wave
-        this.samples=0;
+        this.samples = 0;
     }
 
     /**
@@ -66,13 +61,11 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param duration  the duration of the sine wave, in seconds
      */
     public SoundWave(double freq, double phase, double amplitude, double duration) {
-        // TODO: Implement this constructor
-        this.samples= (int) (duration*SAMPLES_PER_SECOND);
-        for(int i=0;i<=samples;i++){
+        samples = (int) duration * SAMPLES_PER_SECOND;
+        for (int i = 0; i <= samples; i++) {
             double sin = Math.sin(2 * Math.PI * freq * i / SAMPLES_PER_SECOND + phase);
-
-            this.lchannel.add(amplitude* sin);
-            this.rchannel.add(amplitude* sin);
+            this.lchannel.add(amplitude * sin);
+            this.rchannel.add(amplitude * sin);
         }
     }
 
@@ -83,10 +76,9 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @return an array that represents the left channel for this wave.
      */
     public double[] getLeftChannel() {
-        // TODO: Implement this
         double[] leftChannel = new double[lchannel.size()];
-        for(int i=0;i<lchannel.size();i++){
-            leftChannel[i]=lchannel.get(i);
+        for (int i = 0; i < lchannel.size(); i++) {
+            leftChannel[i] = lchannel.get(i);
         }
 
         return leftChannel; // change this
@@ -99,10 +91,9 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @return an array that represents the right channel for this wave.
      */
     public double[] getRightChannel() {
-        /* TODO: Implement this */
         double[] rightChannel = new double[rchannel.size()];
-        for(int i=0;i<rchannel.size();i++){
-            rightChannel[i]=rchannel.get(i);
+        for (int i = 0; i < rchannel.size(); i++) {
+            rightChannel[i] = rchannel.get(i);
         }
 
         return rightChannel; // change this
@@ -148,13 +139,12 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param rchannel
      */
     public void append(double[] lchannel, double[] rchannel) {
-        // TODO: Implement this method.
-      for(double value : lchannel){
-          this.lchannel.add(value);
-      }
-      for(double v: rchannel){
-          this.rchannel.add(v);
-      }
+        for (double value : lchannel) {
+            this.lchannel.add(value);
+        }
+        for (double v : rchannel) {
+            this.rchannel.add(v);
+        }
     }
 
     /**
@@ -163,7 +153,6 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param other the wave to append.
      */
     public void append(SoundWave other) {
-        // TODO: Implement this method.
         this.lchannel.addAll(other.lchannel);
         this.rchannel.addAll(other.rchannel);
     }
@@ -175,26 +164,26 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @param other the other wave added to the original one
      */
     public SoundWave add(SoundWave other) {
-        // TODO: Implement this method
-        SoundWave Addwave =new SoundWave();
 
-        for(int i=0;i<other.lchannel.size()||
-                (i<this.lchannel.size());i++){
-            if(i>=other.lchannel.size()||i>=this.lchannel.size()){
-                if(other.lchannel.size()>this.lchannel.size()){
+        SoundWave Addwave = new SoundWave();
+
+        for (int i = 0; i < other.lchannel.size() ||
+                (i < this.lchannel.size()); i++) {
+            if (i >= other.lchannel.size() || i >= this.lchannel.size()) {
+                if (other.lchannel.size() > this.lchannel.size()) {
                     this.lchannel.add(other.lchannel.get(i));
                     this.rchannel.add(other.rchannel.get(i));
                 }
-            }else {
-                if(this.lchannel.get(i)+other.lchannel.get(i)<=1&&this.lchannel.get(i)+other.lchannel.get(i)>=-1) {
+            } else {
+                if (this.lchannel.get(i) + other.lchannel.get(i) <= 1 && this.lchannel.get(i) + other.lchannel.get(i) >= -1) {
                     this.lchannel.set(i, this.lchannel.get(i) + other.lchannel.get(i));
                     this.rchannel.set(i, this.rchannel.get(i) + other.rchannel.get(i));
-                }else if(this.lchannel.get(i)+other.lchannel.get(i)>1){
-                    this.lchannel.set(i,1.0);
-                    this.rchannel.set(i,1.0);
-                }else {
-                    this.lchannel.set(i,-1.0);
-                    this.rchannel.set(i,-1.0);
+                } else if (this.lchannel.get(i) + other.lchannel.get(i) > 1) {
+                    this.lchannel.set(i, 1.0);
+                    this.rchannel.set(i, 1.0);
+                } else {
+                    this.lchannel.set(i, -1.0);
+                    this.rchannel.set(i, -1.0);
                 }
             }
         }
@@ -211,42 +200,43 @@ public class SoundWave implements HasSimilarity<SoundWave> {
      * @return a new sound wave with an echo.
      */
     public SoundWave addEcho(int delta, double alpha) throws IllegalArgumentException {
-        // TODO: Implement this method
-if(delta<0||alpha<0){
-    throw new IllegalArgumentException();
-}else {
-    int temp ;
 
-    double[] rchan = new double[this.samples + delta];
-    double[] lchan = new double[this.samples + delta];
-    for (int i = 0; i < (this.samples + delta); i++) {
-        temp = i - delta;
-        if (i < delta && i < this.samples) {
-            rchan[i] = this.rchannel.get(i);
-            lchan[i] = this.lchannel.get(i);
-        } else if (i >= delta && i < this.samples && temp >= 0) {
-            if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha <= 1.0 && this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= -1.0) {
-                rchan[i] = this.rchannel.get(i) + this.rchannel.get(temp) * alpha;
-                lchan[i] = this.lchannel.get(i) + this.lchannel.get(temp) * alpha;
-            } else if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= 1.0) {
-                rchan[i] = 1.0;
-                lchan[i] = 1.0;
-            } else {
-                rchan[i] = -1.0;
-                lchan[i] = -1.0;
+        if (delta < 0 || alpha < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            int temp;
+
+            double[] rchan = new double[this.samples + delta];
+            double[] lchan = new double[this.samples + delta];
+            for (int i = 0; i < (this.samples + delta); i++) {
+                temp = i - delta;
+                if (i < delta && i < this.samples) {
+                    rchan[i] = this.rchannel.get(i);
+                    lchan[i] = this.lchannel.get(i);
+                } else if (i >= delta && i < this.samples && temp >= 0) {
+                    if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha <= 1.0
+                            && this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= -1.0) {
+                        rchan[i] = this.rchannel.get(i) + this.rchannel.get(temp) * alpha;
+                        lchan[i] = this.lchannel.get(i) + this.lchannel.get(temp) * alpha;
+                    } else if (this.rchannel.get(i) + this.rchannel.get(temp) * alpha >= 1.0) {
+                        rchan[i] = 1.0;
+                        lchan[i] = 1.0;
+                    } else {
+                        rchan[i] = -1.0;
+                        lchan[i] = -1.0;
+                    }
+                } else if (i >= delta && i < this.samples + delta && temp < 0) {
+                    rchan[i] = 0.0;
+                    lchan[i] = 0.0;
+                } else if (i >= delta && i < this.samples + delta && temp >= 0) {
+                    rchan[i] = this.rchannel.get(temp) * alpha;
+                    lchan[i] = this.lchannel.get(temp) * alpha;
+                }
             }
-        } else if (i >= delta && i < this.samples + delta && temp < 0) {
-            rchan[i] = 0.0;
-            lchan[i] = 0.0;
-        } else if (i >= delta && i < this.samples + delta && temp >= 0) {
-            rchan[i] = this.rchannel.get(temp) * alpha;
-            lchan[i] = this.lchannel.get(temp) * alpha;
-        }
-    }
-    SoundWave echoWave = new SoundWave(rchan, lchan);
-    return echoWave;
+            SoundWave echoWave = new SoundWave(rchan, lchan);
+            return echoWave;
 
-}// change this
+        }// change this
     }
 
     /**
@@ -258,23 +248,18 @@ if(delta<0||alpha<0){
      */
     public void scale(double scalingFactor) {
         // TODO: Implement this method.
+        scaleChannel(this.lchannel, scalingFactor);
+        scaleChannel(this.rchannel, scalingFactor);
+    }
 
-        for(int i=0;i<this.lchannel.size();i++){
-            this.lchannel.set(i,this.lchannel.get(i)*scalingFactor);
-            if (this.lchannel.get(i)>1){
-                this.lchannel.set(i,1.0);
-            }
-            else if(this.lchannel.get(i)<-1){
-                this.lchannel.set(i,-1.0);
-            }
-        }
-        for(int i=0;i<this.rchannel.size();i++){
-            this.rchannel.set(i,this.rchannel.get(i)*scalingFactor);
-            if (this.rchannel.get(i)>1){
-                this.rchannel.set(i,1.0);
-            }
-            else if(this.rchannel.get(i)<-1){
-                this.rchannel.set(i,-1.0);
+
+    private void scaleChannel(List<Double> channel, double scalingFac) {
+        for (int i = 0; i < channel.size(); i++) {
+            channel.set(i, channel.get(i) * scalingFac);
+            if (channel.get(i) > 1) {
+                channel.set(i, 1.0);
+            } else if (channel.get(i) < -1) {
+                channel.set(i, -1.0);
             }
         }
     }
@@ -288,10 +273,10 @@ if(delta<0||alpha<0){
      * @return HPS Sound wave
      */
     public SoundWave highPassFilter(int dt, double RC) throws IllegalArgumentException {
-        // TODO: Implement this
-        if(dt<0||RC<=0){
+
+        if (dt < 0 || RC <= 0) {
             throw new IllegalArgumentException();
-        }else {
+        } else {
             SoundWave highPass = new SoundWave();
             double alpha = RC / (RC + dt);
             double[] rchan = new double[this.rchannel.size()];
@@ -303,9 +288,7 @@ if(delta<0||alpha<0){
 
             for (int i = 1; i < rchannel.size(); i++) {
                 // y[i] := α * y[i-1] + α * (x[i] - x[i-1])
-
                 this.rchannel.set(i, alpha * this.rchannel.get(i - 1) + alpha * (rchan[i] - rchan[i - 1]));
-
                 this.lchannel.set(i, alpha * this.lchannel.get(i - 1) + alpha * (lchan[i] - lchan[i - 1]));
 
             }
@@ -326,44 +309,44 @@ if(delta<0||alpha<0){
      * return the higher frequency.
      */
     public double highAmplitudeFreqComponent() {
-        // TODO: Implement this method
+
         double tempAmpR1;
         double tempAmpL1;
         double temp;
-        double maxAmp=0.0;
-        int Kval=0;
+        double maxAmp = 0.0;
+        int Kval = 0;
         int i;
 
-        for( i=0;i<this.samples;i++){
-            ComplexNumber SumR=new ComplexNumber(0.0,0.0);
-            ComplexNumber SumL=new ComplexNumber(0.0,0.0);
-            for (int j=0;j<this.samples;j++){
+        for (i = 0; i < this.samples; i++) {
+            ComplexNumber SumR = new ComplexNumber(0.0, 0.0);
+            ComplexNumber SumL = new ComplexNumber(0.0, 0.0);
+            for (int j = 0; j < this.samples; j++) {
 
-                ComplexNumber cR= new ComplexNumber(this.rchannel.get(j),0.0);
-                ComplexNumber cR1=new ComplexNumber(Math.cos(2*Math.PI*i*j/this.samples),-Math.sin(2*Math.PI*i*j/this.samples));
-                ComplexNumber R=cR.multiply(cR1);
-                SumR=SumR.add(R);
+                ComplexNumber cR = new ComplexNumber(this.rchannel.get(j), 0.0);
+                ComplexNumber cR1 = new ComplexNumber(Math.cos(2 * Math.PI * i * j / this.samples), -Math.sin(2 * Math.PI * i * j / this.samples));
+                ComplexNumber R = cR.multiply(cR1);
+                SumR = SumR.add(R);
 
-                ComplexNumber cL= new ComplexNumber(this.lchannel.get(j),0.0);
-                ComplexNumber cL1=new ComplexNumber(Math.cos(2*Math.PI*i*j/this.samples),-Math.sin(2*Math.PI*i*j/this.samples));
-                ComplexNumber L =cL.multiply(cL1);
-                SumL=SumL.add(L);
+                ComplexNumber cL = new ComplexNumber(this.lchannel.get(j), 0.0);
+                ComplexNumber cL1 = new ComplexNumber(Math.cos(2 * Math.PI * i * j / this.samples), -Math.sin(2 * Math.PI * i * j / this.samples));
+                ComplexNumber L = cL.multiply(cL1);
+                SumL = SumL.add(L);
             }
-            tempAmpR1=Math.sqrt(SumR.real()*SumR.real()+SumR.imaginary()*SumR.imaginary()) /this.samples;
-            tempAmpL1=Math.sqrt(SumL.real()*SumL.real()+SumL.imaginary()*SumL.imaginary())  /this.samples;
-            double tempAmpL=Math.round((float) tempAmpL1*10.0)/10.0;
-            double tempAmpR=Math.round((float) tempAmpR1*10.0)/10.0;
-            if(Math.abs(tempAmpL)>=Math.abs(tempAmpR)){
-                temp=Math.abs(tempAmpL);
-            }else {
-                temp=Math.abs(tempAmpR);
+            tempAmpR1 = Math.sqrt(SumR.real() * SumR.real() + SumR.imaginary() * SumR.imaginary()) / samples;
+            tempAmpL1 = Math.sqrt(SumL.real() * SumL.real() + SumL.imaginary() * SumL.imaginary()) / samples;
+            double tempAmpL = Math.round((float) tempAmpL1 * 10.0) / 10.0;
+            double tempAmpR = Math.round((float) tempAmpR1 * 10.0) / 10.0;
+            if (Math.abs(tempAmpL) >= Math.abs(tempAmpR)) {
+                temp = Math.abs(tempAmpL);
+            } else {
+                temp = Math.abs(tempAmpR);
             }
-            if(temp>=maxAmp){
-                maxAmp=temp;
-                Kval=i;
+            if (temp >= maxAmp) {
+                maxAmp = temp;
+                Kval = i;
             }
         }
-        return (float)Kval*SAMPLES_PER_SECOND/this.samples; // change this
+        return (float) Kval * SAMPLES_PER_SECOND / samples; // change this
     }
 
     /**
@@ -375,18 +358,18 @@ if(delta<0||alpha<0){
      * possible amplitude scaling.
      */
     public boolean contains(SoundWave other) {
-        // TODO: Implement this method
-int tempR = 0,tempL=0;
-    boolean state1=false;
-    boolean state2=false;
-    double factorL=0,factorR=0;
-int i;
-        for(i=0;i<=this.lchannel.size()-other.lchannel.size();i++){
-            int lenL=0;
-            for(int g=0;g<other.lchannel.size()&&i+g<this.lchannel.size();g++) {
-                 factorL=0;
+
+        int tempR = 0, tempL = 0;
+        boolean state1 = false;
+        boolean state2 = false;
+        double factorL = 0, factorR = 0;
+        int i;
+        for (i = 0; i <= this.lchannel.size() - other.lchannel.size(); i++) {
+            int lenL = 0;
+            for (int g = 0; g < other.lchannel.size() && i + g < this.lchannel.size(); g++) {
+                factorL = 0;
                 if (other.lchannel.get(g) != 0) {
-                    factorL = this.lchannel.get(i+g) / other.lchannel.get(g);
+                    factorL = this.lchannel.get(i + g) / other.lchannel.get(g);
 
                 } else if (other.lchannel.get(g) == 0) {
                     factorL = 0;
@@ -397,97 +380,97 @@ int i;
 
                     L[j] = other.lchannel.get(j);
                 }
-                for(int f=0;f<other.rchannel.size();f++){
-                    R[f]=other.rchannel.get(f);
+                for (int f = 0; f < other.rchannel.size(); f++) {
+                    R[f] = other.rchannel.get(f);
                 }
 
                 SoundWave LS = new SoundWave(L, R);
 
                 LS.scale(factorL);
                 for (int o = 0; o < other.lchannel.size(); o++) {
-                    double numx=LS.lchannel.get(o);
+                    double numx = LS.lchannel.get(o);
                     double scale = Math.pow(10, 3);
-                    numx= Math.round(numx * scale) / scale;
-                   LS.lchannel.set(o,numx);
+                    numx = Math.round(numx * scale) / scale;
+                    LS.lchannel.set(o, numx);
                 }
-                lenL=0;
+                lenL = 0;
                 for (int k = 0; k < other.lchannel.size(); k++) {
                     double numL = this.lchannel.get(i + k);
                     double numL1 = LS.lchannel.get(k);
 
                     if (numL == numL1) {
-                        lenL = lenL + 1;
+                        lenL += 1;
                     }
 
                 }
 
                 if (lenL == other.lchannel.size()) {
                     state1 = true;
-                    tempL=i;
+                    tempL = i;
                     break;
                 }
             }
-            if(state1){
+            if (state1) {
                 break;
             }
         }
         //
         int v;
-        for(v=0;v<=this.rchannel.size()-other.rchannel.size();v++) {
+        for (v = 0; v <= this.rchannel.size() - other.rchannel.size(); v++) {
             int lenR = 0;
-            for(int p=0;p<other.rchannel.size()&&v+p<this.rchannel.size();p++){
-                 factorR=0;
-            if (other.rchannel.get(p) != 0) {
-
-                factorR = this.rchannel.get(v+p) / other.rchannel.get(p);
-            } else if (other.rchannel.get(p) == 0) {
-
+            for (int p = 0; p < other.rchannel.size() && v + p < this.rchannel.size(); p++) {
                 factorR = 0;
+                if (other.rchannel.get(p) != 0) {
+
+                    factorR = this.rchannel.get(v + p) / other.rchannel.get(p);
+                } else if (other.rchannel.get(p) == 0) {
+
+                    factorR = 0;
 
 
-            }
-            double[] R = new double[other.rchannel.size()];
-            double[] L = new double[other.lchannel.size()];
-            for (int j = 0; j < other.rchannel.size(); j++) {
-                R[j] = other.rchannel.get(j);
+                }
+                double[] R = new double[other.rchannel.size()];
+                double[] L = new double[other.lchannel.size()];
+                for (int j = 0; j < other.rchannel.size(); j++) {
+                    R[j] = other.rchannel.get(j);
 
-            }
+                }
                 for (int h = 0; h < other.lchannel.size(); h++) {
                     L[h] = other.lchannel.get(h);
 
                 }
-            SoundWave RS = new SoundWave(L, R);
+                SoundWave RS = new SoundWave(L, R);
 
-            RS.scale(factorR);
+                RS.scale(factorR);
                 for (int u = 0; u < other.rchannel.size(); u++) {
-                    double numk=RS.rchannel.get(u);
+                    double numk = RS.rchannel.get(u);
                     double scale = Math.pow(10, 3);
-                    numk= Math.round(numk * scale) / scale;
-                    RS.rchannel.set(u,numk);
+                    numk = Math.round(numk * scale) / scale;
+                    RS.rchannel.set(u, numk);
                 }
-    lenR=0;
-            for (int k = 0; k < other.rchannel.size(); k++) {
+                lenR = 0;
+                for (int k = 0; k < other.rchannel.size(); k++) {
 
-                double numR = this.rchannel.get(v + k);
-                double numR1 = RS.rchannel.get(k);
+                    double numR = this.rchannel.get(v + k);
+                    double numR1 = RS.rchannel.get(k);
 
-                if (numR == numR1) {
-                    lenR = lenR + 1;
+                    if (numR == numR1) {
+                        lenR += 1;
+                    }
+                }
+
+                if (lenR == other.rchannel.size()) {
+                    state2 = true;
+                    tempR = v;
+                    break;
                 }
             }
-
-            if (lenR == other.rchannel.size()) {
-                state2 = true;
-                 tempR=v;
+            if (state2) {
                 break;
             }
         }
-            if(state2){
-                break;
-            }
-        }
-        if(state1&&state2&&tempL==tempR){
-            this.beta[0]=factorR;
+        if (state1 && state2 && tempL == tempR) {
+            this.beta[0] = factorR;
             return true;
         }
         return false;
@@ -502,12 +485,28 @@ int i;
      * @return the similarity between this wave and other.
      */
     public double similarity(SoundWave other) {
-        // TODO: Implement this method
-        double betaPro=0;
-        double temp=0;
-        double gamma=0;
-        double upper=0.0, lower=0.0;
-        if(this.rchannel.size()>=other.rchannel.size()){
+        double gama1, gama2;
+        gama1 = this.sim(other);
+        gama2 = other.sim(this);
+        if (this.contains(other) && other.contains(this)) {
+            return 1.0;
+        } else {
+            return (gama1 + gama2) / 2.0;
+        }
+    }
+
+    /**
+     * Determine the similarity between waves (either this wave or another wave).
+     * @param other .
+     * @return the similarity between waves
+     */
+
+    public double sim(SoundWave other) {
+        double betaPro = 0;
+        double temp = 0;
+        double gamma = 0;
+        double upper = 0.0, lower = 0.0;
+        if (this.rchannel.size() >= other.rchannel.size()) {
             double tempL = 0.0, tempR = 0.0;
             if (this.contains(other)) {
                 betaPro = this.beta[0];
@@ -529,40 +528,38 @@ int i;
                 }
 
 
-
-
             } else {
-                if(this.rchannel.size()>=this.lchannel.size()) {
+                if (this.rchannel.size() >= this.lchannel.size()) {
                     for (int m = 0; m < this.rchannel.size(); m++) {
-                            if(m>=other.lchannel.size()){
-                                other.lchannel.add(0.0);
-                            }
-                        if(m>=other.rchannel.size()){
+                        if (m >= other.lchannel.size()) {
+                            other.lchannel.add(0.0);
+                        }
+                        if (m >= other.rchannel.size()) {
                             other.rchannel.add(0.0);
                         }
-                        if(m>=this.lchannel.size()){
+                        if (m >= this.lchannel.size()) {
                             this.lchannel.add(0.0);
                         }
                     }
-                }else{
+                } else {
                     for (int n = 0; n < this.lchannel.size(); n++) {
-                        if(n>=other.lchannel.size()){
+                        if (n >= other.lchannel.size()) {
                             other.lchannel.add(0.0);
                         }
-                        if(n>=other.rchannel.size()){
+                        if (n >= other.rchannel.size()) {
                             other.rchannel.add(0.0);
                         }
-                        if(n>=this.rchannel.size()){
+                        if (n >= this.rchannel.size()) {
                             this.rchannel.add(0.0);
                         }
                     }
                 }
-                for(int y=0;y<this.lchannel.size();y++){
-                    upper+=this.rchannel.get(y)*other.rchannel.get(y)+this.lchannel.get(y)*other.lchannel.get(y);
-                    lower+=other.rchannel.get(y)*other.rchannel.get(y)+other.lchannel.get(y)*other.lchannel.get(y);
+                for (int y = 0; y < this.lchannel.size(); y++) {
+                    upper += this.rchannel.get(y) * other.rchannel.get(y) + this.lchannel.get(y) * other.lchannel.get(y);
+                    lower += other.rchannel.get(y) * other.rchannel.get(y) + other.lchannel.get(y) * other.lchannel.get(y);
                 }
-                if(lower!=0){
-                    betaPro=upper/lower;
+                if (lower != 0) {
+                    betaPro = upper / lower;
 
                     for (int j = 0; j < this.lchannel.size(); j++) {
 
@@ -575,108 +572,109 @@ int i;
                     }
 
                 }
-                if(lower==0){
+                if (lower == 0) {
                     for (int j = 0; j < this.lchannel.size(); j++) {
 
-                        tempL += (this.lchannel.get(j)) * (this.lchannel.get(j) );
+                        tempL += (this.lchannel.get(j)) * (this.lchannel.get(j));
 
                     }
                     for (int k = 0; k < this.rchannel.size(); k++) {
 
-                        tempR += (this.rchannel.get(k)) * (this.rchannel.get(k) );
+                        tempR += (this.rchannel.get(k)) * (this.rchannel.get(k));
                     }
                 }
 
             }
             temp += tempL + tempR;
             gamma = 1 / (1 + temp);
-        }else {
+        } else {
             double tempL = 0.0, tempR = 0.0;
-            if(other.contains(this)){
-                betaPro = 1.0/other.beta[0];
-
+            if (other.contains(this)) {
+                betaPro = 1.0 / other.beta[0];
+                if (other.beta[0] == 0) {
+                    return 1.0;
+                }
 
                 for (int j = 0; j < other.lchannel.size(); j++) {
                     if (j < this.lchannel.size()) {
                         tempL += (this.lchannel.get(j) - betaPro * other.lchannel.get(j)) * (this.lchannel.get(j) - betaPro * other.lchannel.get(j));
                     } else {
-                        tempL += betaPro * other.lchannel.get(j)*betaPro * other.lchannel.get(j);
+                        tempL += betaPro * other.lchannel.get(j) * betaPro * other.lchannel.get(j);
                     }
                 }
                 for (int k = 0; k < other.rchannel.size(); k++) {
                     if (k < this.rchannel.size()) {
                         tempR += (this.rchannel.get(k) - betaPro * other.rchannel.get(k)) * (this.rchannel.get(k) - betaPro * other.rchannel.get(k));
                     } else {
-                        tempR +=  betaPro * other.rchannel.get(k)* betaPro * other.rchannel.get(k);
+                        tempR += betaPro * other.rchannel.get(k) * betaPro * other.rchannel.get(k);
                     }
                 }
 
 
-
-
-            }else {
-                if(other.rchannel.size()>=other.lchannel.size()) {
+            } else {
+                if (other.rchannel.size() >= other.lchannel.size()) {
                     for (int m = 0; m < other.rchannel.size(); m++) {
-                        if(m>=other.lchannel.size()){
+                        if (m >= other.lchannel.size()) {
                             other.lchannel.add(0.0);
                         }
-                        if(m>=this.rchannel.size()){
+                        if (m >= this.rchannel.size()) {
                             this.rchannel.add(0.0);
                         }
-                        if(m>=this.lchannel.size()){
+                        if (m >= this.lchannel.size()) {
                             this.lchannel.add(0.0);
+                        } else {
+                            for (int n = 0; n < other.lchannel.size(); n++) {
+                                if (n >= other.rchannel.size()) {
+                                    other.lchannel.add(0.0);
+                                }
+                                if (n >= this.rchannel.size()) {
+                                    this.rchannel.add(0.0);
+                                }
+                                if (n >= this.lchannel.size()) {
+                                    this.lchannel.add(0.0);
+                                }
+                            }
+                        }
+                        for (int y = 0; y < this.lchannel.size(); y++) {
+                            upper += this.rchannel.get(y) * other.rchannel.get(y) + this.lchannel.get(y) * other.lchannel.get(y);
+                            lower += other.rchannel.get(y) * other.rchannel.get(y) + other.lchannel.get(y) * other.lchannel.get(y);
+                        }
+                        if (lower != 0) {
+                            betaPro = upper / lower;
+
+                            for (int j = 0; j < this.lchannel.size(); j++) {
+
+                                tempL += (this.lchannel.get(j) - betaPro * other.lchannel.get(j)) * (this.lchannel.get(j) - betaPro * other.lchannel.get(j));
+
+                            }
+                            for (int k = 0; k < this.rchannel.size(); k++) {
+
+                                tempR += (this.rchannel.get(k) - betaPro * other.rchannel.get(k)) * (this.rchannel.get(k) - betaPro * other.rchannel.get(k));
+                            }
+
+                        }
+                        if (lower == 0) {
+                            for (int j = 0; j < this.lchannel.size(); j++) {
+
+                                tempL += (this.lchannel.get(j)) * (this.lchannel.get(j));
+
+                            }
+                            for (int k = 0; k < this.rchannel.size(); k++) {
+
+                                tempR += (this.rchannel.get(k)) * (this.rchannel.get(k));
+                            }
                         }
                     }
-                }else{
-                    for (int n = 0; n < other.lchannel.size(); n++) {
-                        if(n>=other.rchannel.size()){
-                            other.lchannel.add(0.0);
-                        }
-                        if(n>=this.rchannel.size()){
-                            this.rchannel.add(0.0);
-                        }
-                        if(n>=this.lchannel.size()){
-                            this.lchannel.add(0.0);
-                        }
-                    }
+                    temp += tempL + tempR;
+                    gamma = 1 / (1 + temp);
                 }
-                for(int y=0;y<this.lchannel.size();y++){
-                    upper+=this.rchannel.get(y)*other.rchannel.get(y)+this.lchannel.get(y)*other.lchannel.get(y);
-                    lower+=other.rchannel.get(y)*other.rchannel.get(y)+other.lchannel.get(y)*other.lchannel.get(y);
-                }
-                if(lower!=0){
-                betaPro=upper/lower;
-
-                for (int j = 0; j < this.lchannel.size(); j++) {
-
-                    tempL += (this.lchannel.get(j) - betaPro * other.lchannel.get(j)) * (this.lchannel.get(j) - betaPro * other.lchannel.get(j));
-
-                }
-                for (int k = 0; k < this.rchannel.size(); k++) {
-
-                    tempR += (this.rchannel.get(k) - betaPro * other.rchannel.get(k)) * (this.rchannel.get(k) - betaPro * other.rchannel.get(k));
-                }
-
             }
-                if(lower==0){
-                    for (int j = 0; j < this.lchannel.size(); j++) {
-
-                        tempL += (this.lchannel.get(j)) * (this.lchannel.get(j) );
-
-                    }
-                    for (int k = 0; k < this.rchannel.size(); k++) {
-
-                        tempR += (this.rchannel.get(k)) * (this.rchannel.get(k) );
-                    }
-                }
-            }
-            temp += tempL + tempR;
-            gamma = 1 / (1 + temp);
         }
-
         return gamma;
 
     }
+
+
 
     /**
      * Play this wave on the standard stereo device.
@@ -688,4 +686,17 @@ int i;
         StdPlayer.playWave(lchannel, rchannel);
     }
 
+    @Override
+    public int compareTo(SoundWave soundWave) {
+        if (this.samples==soundWave.samples){
+         for (int i=0;i<this.lchannel.size();i++){
+             if((!this.lchannel.get(i).equals(soundWave.lchannel.get(i)))
+                     ||(!this.rchannel.get(i).equals(soundWave.rchannel.get(i)))){
+                 return 1;
+             }
+            }
+        }
+        return 0;
+    }
+    public boolean equals(SoundWave soundWave){return this.compareTo(soundWave)==0;}
 }

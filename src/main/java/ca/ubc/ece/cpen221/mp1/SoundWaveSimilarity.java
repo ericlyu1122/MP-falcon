@@ -1,6 +1,7 @@
 package ca.ubc.ece.cpen221.mp1;
 
-import java.util.Set;
+import java.util.*;
+
 import ca.ubc.ece.cpen221.mp1.utils.*;
 
 public class SoundWaveSimilarity {
@@ -18,9 +19,74 @@ public class SoundWaveSimilarity {
      * @param w             is not null and is included in comparisonSet.
      * @return the set of waves that are in the same group as w after grouping.
      */
-    public Set<SoundWave> getSimilarWaves(Set<SoundWave> comparisonSet, int numGroups, SoundWave w) {
-        // TODO: Implement this method
-        return null; // change this!
-    }
+    public  Set<SoundWave> getSimilarWaves(Set<SoundWave> comparisonSet, int numGroups, SoundWave w)  {
 
+        List<SoundWave> soundSet= new ArrayList<>();
+        soundSet.addAll(comparisonSet);
+
+        Map<Pair<SoundWave>, Double> soundPair;
+
+        Groups<SoundWave> AllGroup=new Groups<>();
+        for(SoundWave wave:comparisonSet){
+            AllGroup.add(wave);
+        }
+
+        soundPair=toGetAllSim(soundSet);
+
+        int n=comparisonSet.size();
+        double maxSim;
+
+        List<Pair<SoundWave>> allPair=new ArrayList<>();
+        allPair.addAll(soundPair.keySet());
+
+        while(n>numGroups){
+            maxSim=0;
+            Pair<SoundWave> findMax=new Pair<>(soundSet.get(0),soundSet.get(1));
+
+            for(Pair pair: allPair){
+                if(soundPair.get(pair)>=maxSim){
+                    maxSim=soundPair.get(pair);
+                    findMax=pair;
+                }
+            }
+
+            allPair.remove(findMax);
+            soundPair.remove(findMax);
+            /* n-- when merge
+            * */
+            if(!AllGroup.find(findMax.getElem1()).equals(AllGroup.find(findMax.getElem2()))){
+                n--;
+                AllGroup.merge(findMax.getElem1(),findMax.getElem2());
+            }
+
+        }
+        Set<SoundWave> finalSound=new HashSet<>();
+
+       for(SoundWave wavv: comparisonSet){
+           if(AllGroup.find(wavv).equals(AllGroup.find(w)));
+           finalSound.add(wavv);
+       }
+        return finalSound; // change this!
+    }
+    /**
+     *
+     * @param   soundset: a List of SoundWave.
+     * @return  a Map: Mapping the pair of SoundWaves with their similarity
+     * *
+     * */
+    public Map<Pair<SoundWave>, Double> toGetAllSim(List<SoundWave> soundset){
+            Map<Pair<SoundWave>, Double> mapPair =new HashMap<>();
+            double sim;
+            for (int i=0;i<soundset.size();i++){
+                for(int j=1;j+i<soundset.size();j++){
+                   Pair<SoundWave> p=new Pair<>(soundset.get(i),soundset.get(j));
+                   sim=soundset.get(i).similarity(soundset.get(j));
+                   mapPair.put(p,sim);
+                }
+            }
+            return mapPair;
+    }
 }
+
+
+
