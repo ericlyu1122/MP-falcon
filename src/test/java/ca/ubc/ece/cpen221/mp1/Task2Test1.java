@@ -66,11 +66,11 @@ public class Task2Test1 {
     /*Test6: test contains for different left and right channels */
     @Test
     public void testContains6() {
-        double[] al = {-0.1, 0.2, 0.3, 0.4, 0.5, 0.6};
-        double[] ar = {0.3, -0.4, 0.7, 0.9, 1.0, 0.2};
+        double[] al = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6};
+        double[] ar = {0.3, 0.4, 0.7, 0.9, 1.0, 0.2};
         SoundWave a = new SoundWave(al, ar);
-        double[] bl = {-0.01, 0.02, 0.03};
-        double[] br = {0.03, -0.04, 0.07};
+        double[] bl = {0.01, 0.02, 0.03};
+        double[] br = {0.03, 0.04, 0.07};
         SoundWave b = new SoundWave(bl, br);
         Assert.assertTrue(a.contains(b));
     }
@@ -102,7 +102,7 @@ public class Task2Test1 {
     /*Test9: test contains with one wave of all zeros*/
     @Test
     public void testContains9() {
-        double[] al = {0.0, 0.0, 0.0, -1.0};
+        double[] al = {0.0, 0.0, 0.0, 1.0};
         double[] ar = {0.0, 0.0, 0.0, 0.0, 1.0, 0.2};
         SoundWave a = new SoundWave(al, ar);
         double[] bl = {0.0, 0.0, 0.0, 0.0};
@@ -129,14 +129,14 @@ public class Task2Test1 {
         double[] bl = {0.0, 0.0, 0.0, 0.0};
         double[] br = {0.0, 0.0, 0.0, 0.0};
         SoundWave b = new SoundWave(bl, br);
-        Assert.assertFalse(a.contains(b));
+        Assert.assertTrue(a.contains(b));
     }
 
     /*Test11: test contains with one wave of all zeros*/
     @Test
     public void testContains11() {
         double[] al = {0.1};
-        double[] ar = {-0.2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.2};
+        double[] ar = {0.2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.2};
         SoundWave a = new SoundWave(al, ar);
         double[] bl = {0.0, 0.0, 0.0, 0.0};
         double[] br = {0.0, 0.0, 0.0, 0.0, 0.0};
@@ -167,23 +167,23 @@ public class Task2Test1 {
     @Test
     public void testContains13() {
         double[] al = {0.1, 0.2, 0.3, 0.4};
-        double[] ar = {-0.1, 0.2, 0.3, 0.4};
+        double[] ar = {0.1, 0.2, 0.3, 0.4};
         SoundWave a = new SoundWave(al, ar);
-        double[] bl = {-0.2, -0.4};
-        double[] br =  {0.2, -0.4,-0.6};
+        double[] bl = {0.2, 0.4};
+        double[] br =  {0.2, 0.4,0.6};
         SoundWave b = new SoundWave(bl, br);
-        Assert.assertTrue(a.contains(b));
+        Assert.assertFalse(a.contains(b));
     }
     /*Test14 : similarity test*/
     @Test
     public void similarityTest3() {
-        double[] ar = {-0.1, 0.2, 0.3, 0.4};
+        double[] ar = {0.1, 0.2, 0.3, 0.4};
         double[] al = {0.1, 0.2, 0.3, 0.4};
-        double[] br = {0.2, -0.4,-0.6};
-        double[] bl = {-0.2, -0.4};
+        double[] br = {0.2, 0.4,0.6};
+        double[] bl = {0.2, 0.4};
         SoundWave a = new SoundWave(al, ar);
         SoundWave b = new SoundWave(bl, br);
-        Assert.assertEquals(0.35460993, a.similarity(b), 0.00001);
+        Assert.assertEquals(0.6837016, a.similarity(b), 0.00001);
     }
 
     @Test
@@ -194,7 +194,7 @@ public class Task2Test1 {
         double[] bl = {-0.4, -0.6,-0.8};
         SoundWave a = new SoundWave(al, ar);
         SoundWave b = new SoundWave(bl, br);
-        Assert.assertEquals(0.32467532, a.similarity(b), 0.00001);
+        Assert.assertEquals(0.55956691, a.similarity(b), 0.00001);
     }
     @Test
     public void similarityTest5() {

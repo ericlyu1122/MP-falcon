@@ -27,9 +27,7 @@ public class SoundWaveSimilarity {
         Map<Pair<SoundWave>, Double> soundPair;
 
         Groups<SoundWave> AllGroup=new Groups<>();
-        for(SoundWave wave:comparisonSet){
-            AllGroup.add(wave);
-        }
+        AllGroup=sortgroup((ArrayList<SoundWave>) soundSet);
 
         soundPair=toGetAllSim(soundSet);
 
@@ -54,19 +52,31 @@ public class SoundWaveSimilarity {
             soundPair.remove(findMax);
             /* n-- when merge
             * */
-            if(!AllGroup.find(findMax.getElem1()).equals(AllGroup.find(findMax.getElem2()))){
+            SoundWave h1=AllGroup.find(findMax.getElem1());
+            SoundWave h2=AllGroup.find(findMax.getElem2());
+            if(h1!=h2){
                 n--;
-                AllGroup.merge(findMax.getElem1(),findMax.getElem2());
+                AllGroup.merge(h1,h2);
             }
 
         }
-        Set<SoundWave> finalSound=new HashSet<>();
+        Set<SoundWave> wGroupSet=new HashSet<SoundWave>();
 
-       for(SoundWave wavv: comparisonSet){
-           if(AllGroup.find(wavv).equals(AllGroup.find(w)));
-           finalSound.add(wavv);
-       }
-        return finalSound; // change this!
+        for (SoundWave soundWave :comparisonSet) {
+            if (AllGroup.find((SoundWave) soundWave) == AllGroup.find((SoundWave) w)) {
+                wGroupSet.add(soundWave);
+            }
+        }
+
+        return wGroupSet; // change this!
+    }
+
+    private Groups<SoundWave> sortgroup(ArrayList<SoundWave> comp){
+        Groups<SoundWave> sor=new Groups<>();
+        for(SoundWave www:comp){
+            sor.add(www);
+        }
+        return sor;
     }
     /**
      *
@@ -78,7 +88,7 @@ public class SoundWaveSimilarity {
             Map<Pair<SoundWave>, Double> mapPair =new HashMap<>();
             double sim;
             for (int i=0;i<soundset.size();i++){
-                for(int j=1;j+i<soundset.size();j++){
+                for(int j=soundset.size()-1;j>i;j--){
                    Pair<SoundWave> p=new Pair<>(soundset.get(i),soundset.get(j));
                    sim=soundset.get(i).similarity(soundset.get(j));
                    mapPair.put(p,sim);
