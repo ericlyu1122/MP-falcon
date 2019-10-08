@@ -70,7 +70,7 @@ public class SoundWaveSimilarity {
 
         return GpSet; // change this!
     }
-    
+
     /**
      *
      * @param   soundset: a List of SoundWave.

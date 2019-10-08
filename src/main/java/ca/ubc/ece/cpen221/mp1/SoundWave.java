@@ -359,7 +359,13 @@ public class SoundWave implements HasSimilarity<SoundWave>  ,Comparable<SoundWav
                 Kval = i;
             }
         }
-        return (float) Kval * SAMPLES_PER_SECOND / samples; // change this
+        double K=0;
+        if(Kval/samples<=1/2){
+            K=(double)Kval/samples;
+        }else {
+            K=(1-(double)Kval/samples);
+        }
+        return  K * SAMPLES_PER_SECOND ; // change this
     }
 
     /**
