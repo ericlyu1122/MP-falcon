@@ -52,23 +52,21 @@ public class SoundWaveSimilarity {
             soundPair.remove(findMax);
             /* n-- when merge
             * */
-            SoundWave h1=AllGroup.find(findMax.getElem1());
-            SoundWave h2=AllGroup.find(findMax.getElem2());
-            if(h1!=h2){
+            if(AllGroup.find(findMax.getElem1())!=AllGroup.find(findMax.getElem2())){
                 n--;
-                AllGroup.merge(h1,h2);
+                AllGroup.merge(AllGroup.find(findMax.getElem1()),AllGroup.find(findMax.getElem2()));
             }
 
         }
-        Set<SoundWave> wGroupSet=new HashSet<SoundWave>();
+        Set<SoundWave> GpSet=new HashSet<SoundWave>();
 
         for (SoundWave soundWave :comparisonSet) {
             if (AllGroup.find((SoundWave) soundWave) == AllGroup.find((SoundWave) w)) {
-                wGroupSet.add(soundWave);
+                GpSet.add(soundWave);
             }
         }
 
-        return wGroupSet; // change this!
+        return GpSet; // change this!
     }
 
     private Groups<SoundWave> sortgroup(ArrayList<SoundWave> comp){
