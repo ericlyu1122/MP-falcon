@@ -27,8 +27,10 @@ public class SoundWaveSimilarity {
         Map<Pair<SoundWave>, Double> soundPair;
 
         Groups<SoundWave> AllGroup=new Groups<>();
-        AllGroup=sortgroup((ArrayList<SoundWave>) soundSet);
 
+        for(SoundWave www:comparisonSet){
+            AllGroup.add(www);
+        }
         soundPair=toGetAllSim(soundSet);
 
         int n=comparisonSet.size();
@@ -68,14 +70,7 @@ public class SoundWaveSimilarity {
 
         return GpSet; // change this!
     }
-
-    private Groups<SoundWave> sortgroup(ArrayList<SoundWave> comp){
-        Groups<SoundWave> sor=new Groups<>();
-        for(SoundWave www:comp){
-            sor.add(www);
-        }
-        return sor;
-    }
+    
     /**
      *
      * @param   soundset: a List of SoundWave.
